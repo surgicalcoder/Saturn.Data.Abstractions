@@ -35,6 +35,7 @@ namespace GoLive.Saturn.Data.Abstractions
         Task Delete<T>(T entity, string overrideCollectionName = "") where T : Entity;
         Task Delete<T>(string Id, string overrideCollectionName = "") where T : Entity;
         Task DeleteMany<T>(IEnumerable<T> entity, string overrideCollectionName = "") where T : Entity;
+        Task DeleteMany<T>(List<string> IDs, string overrideCollectionName = "") where T : Entity;
 
         void DisposeConnection();
         void InitDatabase();
