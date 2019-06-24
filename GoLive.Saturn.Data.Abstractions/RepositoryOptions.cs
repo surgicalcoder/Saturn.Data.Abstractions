@@ -12,7 +12,7 @@ namespace GoLive.Saturn.Data.Abstractions
             Serializers = new Dictionary<Type, object>();
         }
 
-        public string ConnectionStringName { get; set; }
+        public string ConnectionString { get; set; }
 
         public bool DebugMode { get; set; }
         public Action<int, string, string> CommandStartedCallback { get; set; }

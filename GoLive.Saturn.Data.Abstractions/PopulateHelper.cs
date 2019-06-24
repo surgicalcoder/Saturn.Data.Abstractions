@@ -9,7 +9,7 @@ namespace GoLive.Saturn.Data.Abstractions
 {
     public static class PopulateHelper
     {
-        public static async Task Populate<T>(this Ref<T> item, IRepository repository) where T : Entity
+        public static async Task Populate<T>(this Ref<T> item, IReadonlyRepository repository) where T : Entity
         {
             item.Item = await repository.ByRef(item);
         }
@@ -19,7 +19,7 @@ namespace GoLive.Saturn.Data.Abstractions
             item.Item = Items.FirstOrDefault(f => f.Id == item.Id);
         }
 
-        public static async Task Populate<T>(this List<Ref<T>> item, IRepository repository) where T : Entity
+        public static async Task Populate<T>(this List<Ref<T>> item, IReadonlyRepository repository) where T : Entity
         {
             var IDs = item.Select(f => f.Id);
             var items = (await repository.Many<T>(f => IDs.Contains(f.Id))).ToList();
@@ -34,7 +34,7 @@ namespace GoLive.Saturn.Data.Abstractions
             item.ForEach(f => f.Fetch(items));
         }
 
-        public static async Task<List<T>> Populate<T, T2>(List<T> collection, Expression<Func<T, Ref<T2>>> item, IRepository repository) where T : Entity where T2 : Entity
+        public static async Task<List<T>> Populate<T, T2>(List<T> collection, Expression<Func<T, Ref<T2>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
         {
             var compile = item.Compile();
 
@@ -64,7 +64,7 @@ namespace GoLive.Saturn.Data.Abstractions
             return collection;
         }
 
-        public static async Task<List<T>> PopulateMultiple<T, T2>(List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, IRepository repository) where T : Entity where T2 : Entity
+        public static async Task<List<T>> PopulateMultiple<T, T2>(List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
         {
             var compile = item.Compile();
 
