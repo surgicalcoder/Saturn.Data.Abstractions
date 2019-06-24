@@ -13,6 +13,8 @@ namespace GoLive.Saturn.Data.Abstractions
         }
 
         public string ConnectionStringName { get; set; }
+
+        public bool DebugMode { get; set; }
         public Action<int, string, string> CommandStartedCallback { get; set; }
 
         public Action<int, string, TimeSpan> CommandCompletedCallback { get; set; }
