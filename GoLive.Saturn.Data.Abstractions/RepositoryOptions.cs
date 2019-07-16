@@ -10,9 +10,12 @@ namespace GoLive.Saturn.Data.Abstractions
             GenericSerializers = new Dictionary<Type, Type>();
             DiscriminatorConventions = new Dictionary<Type, object>();
             Serializers = new Dictionary<Type, object>();
+            WrappedEntityPrefix = "w_";
         }
 
         public string ConnectionString { get; set; }
+
+        public string WrappedEntityPrefix { get; set; }
 
         public bool DebugMode { get; set; }
         public Action<int, string, string> CommandStartedCallback { get; set; }
