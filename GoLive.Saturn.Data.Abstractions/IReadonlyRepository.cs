@@ -26,5 +26,7 @@ namespace GoLive.Saturn.Data.Abstractions
         Task<List<T>> Many<T>(Dictionary<string, object> WhereClause, int pageSize, int PageNumber, string overrideCollectionName = "") where T : Entity;
         
         Task<long> CountMany<T>(Expression<Func<T, bool>> predicate, string overrideCollectionName = "") where T : Entity;
+
+        Task Watch<T>(Expression<Func<ChangedEntity<T>, bool>> predicate, ChangeOperation operationFilter, Action<T, string, ChangeOperation> callback, string overrideCollectionName = "") where T : Entity;
     }
 }

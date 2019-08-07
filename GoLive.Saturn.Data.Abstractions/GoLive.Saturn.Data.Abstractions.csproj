@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GoLive.Saturn.Data.Entities" Version="1.0.39" />
+    <PackageReference Include="GoLive.Saturn.Data.Entities" Version="1.0.111" />
   </ItemGroup>
 
 </Project>
