@@ -18,11 +18,12 @@ namespace GoLive.Saturn.Data.Abstractions
         public string WrappedEntityPrefix { get; set; }
 
         public bool DebugMode { get; set; }
-        public Action<int, string, string> CommandStartedCallback { get; set; }
 
-        public Action<int, string, TimeSpan> CommandCompletedCallback { get; set; }
+        public Action<CommandStartedArgs> CommandStartedCallback { get; set; }
 
-        public Action<int, string, Exception> CommandFailedCallback { get; set; }
+        public Action<CommandCompletedArgs> CommandCompletedCallback { get; set; }
+
+        public Action<CommandFailedArgs> CommandFailedCallback { get; set; }
 
         public TimeSpan InitDuration { get; set; }
 
