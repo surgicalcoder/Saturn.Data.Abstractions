@@ -34,7 +34,7 @@ namespace GoLive.Saturn.Data.Abstractions
             item.ForEach(f => f.Fetch(items));
         }
 
-        public static async Task<List<T>> Populate<T, T2>(List<T> collection, Expression<Func<T, Ref<T2>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
+        public static async Task<List<T>> Populate<T, T2>(this List<T> collection, Expression<Func<T, Ref<T2>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
         {
             var compile = item.Compile();
 
