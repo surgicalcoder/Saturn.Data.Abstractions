@@ -51,7 +51,7 @@ namespace GoLive.Saturn.Data.Abstractions
         }
 
 #pragma warning disable 1998
-        public static async Task<List<T>> Populate<T, T2>(List<T> collection, Expression<Func<T, Ref<T2>>> item, List<T2> items) where T : Entity where T2 : Entity
+        public static async Task<List<T>> Populate<T, T2>(this List<T> collection, Expression<Func<T, Ref<T2>>> item, List<T2> items) where T : Entity where T2 : Entity
 #pragma warning restore 1998
         {
             var compile = item.Compile();
@@ -64,7 +64,7 @@ namespace GoLive.Saturn.Data.Abstractions
             return collection;
         }
 
-        public static async Task<List<T>> PopulateMultiple<T, T2>(List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
+        public static async Task<List<T>> PopulateMultiple<T, T2>(this List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
         {
             var compile = item.Compile();
 
@@ -84,7 +84,7 @@ namespace GoLive.Saturn.Data.Abstractions
         }
 
 #pragma warning disable 1998
-        public static async Task<List<T>> PopulateMultiple<T, T2>(List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, List<T2> items) where T : Entity where T2 : Entity
+        public static async Task<List<T>> PopulateMultiple<T, T2>(this List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, List<T2> items) where T : Entity where T2 : Entity
 #pragma warning restore 1998
         {
             var compile = item.Compile();
