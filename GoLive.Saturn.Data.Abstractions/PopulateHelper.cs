@@ -34,37 +34,47 @@ namespace GoLive.Saturn.Data.Abstractions
             item.ForEach(f => f.Fetch(items));
         }
 
-        public static async Task<List<T>> Populate<T, T2>(this List<T> collection, Expression<Func<T, Ref<T2>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
+        public static async Task<List<T>> Populate<T, T2>(this List<T> collection, Expression<Func<T, Ref<T2>>> item, IReadonlyRepository repository) where T2 : Entity
         {
             var compile = item.Compile();
 
-            var IDs = collection.Select(f => compile.Invoke(f)).Select(r => r.Id).ToList();
+            var IDs = collection.Where(f=> compile.Invoke(f) != null).Select(f => compile.Invoke(f)).Select(r => r.Id).ToList();
 
             var items = (await repository.Many<T2>(f => IDs.Contains(f.Id))).ToList();
 
             collection.ForEach(delegate (T obj)
             {
-                compile.Invoke(obj).Fetch(items);
+                var re = compile.Invoke(obj);
+
+                if (re != null)
+                {
+                    re.Fetch(items);
+                }
             });
 
             return collection;
         }
 
 #pragma warning disable 1998
-        public static async Task<List<T>> Populate<T, T2>(this List<T> collection, Expression<Func<T, Ref<T2>>> item, List<T2> items) where T : Entity where T2 : Entity
+        public static async Task<List<T>> Populate<T, T2>(this List<T> collection, Expression<Func<T, Ref<T2>>> item, List<T2> items) where T2 : Entity
 #pragma warning restore 1998
         {
             var compile = item.Compile();
 
             collection.ForEach(delegate (T obj)
             {
-                compile.Invoke(obj).Fetch(items);
+                var re = compile.Invoke(obj);
+
+                if (re != null)
+                {
+                    re.Fetch(items);
+                }
             });
 
             return collection;
         }
 
-        public static async Task<List<T>> PopulateMultiple<T, T2>(this List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, IReadonlyRepository repository) where T : Entity where T2 : Entity
+        public static async Task<List<T>> PopulateMultiple<T, T2>(this List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, IReadonlyRepository repository) where T2 : Entity
         {
             var compile = item.Compile();
 
@@ -84,7 +94,7 @@ namespace GoLive.Saturn.Data.Abstractions
         }
 
 #pragma warning disable 1998
-        public static async Task<List<T>> PopulateMultiple<T, T2>(this List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, List<T2> items) where T : Entity where T2 : Entity
+        public static async Task<List<T>> PopulateMultiple<T, T2>(this List<T> collection, Expression<Func<T, List<Ref<T2>>>> item, List<T2> items) where T2 : Entity
 #pragma warning restore 1998
         {
             var compile = item.Compile();
