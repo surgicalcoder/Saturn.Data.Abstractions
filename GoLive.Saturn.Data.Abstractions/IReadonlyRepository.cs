@@ -19,6 +19,8 @@ namespace GoLive.Saturn.Data.Abstractions
         Task<IQueryable<T>> All<T>(string overrideCollectionName = "") where T : Entity;
         
         Task<T> One<T>(Expression<Func<T, bool>> predicate, string overrideCollectionName = "") where T : Entity;
+        Task<T> Random<T>(string overrideCollectionName = "") where T : Entity;
+        Task<List<T>> Random<T>(int count, string overrideCollectionName = "") where T : Entity;
         
         Task<IQueryable<T>> Many<T>(Expression<Func<T, bool>> predicate, string overrideCollectionName = "") where T : Entity;
         Task<List<T>> Many<T>(Dictionary<string, object> WhereClause, string overrideCollectionName = "") where T : Entity;
