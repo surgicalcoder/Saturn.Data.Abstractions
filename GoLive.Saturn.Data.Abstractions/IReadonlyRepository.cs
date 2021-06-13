@@ -12,9 +12,9 @@ namespace GoLive.Saturn.Data.Abstractions
         Task<T> ById<T>(string id, string overrideCollectionName = "") where T : Entity;
         Task<List<T>> ById<T>(List<string> IDs, string overrideCollectionName = "") where T : Entity;
 
-        Task<List<Ref<T>>> ByRef<T>(List<Ref<T>> Item, string overrideCollectionName = "") where T : Entity;
-        Task<T> ByRef<T>(Ref<T> Item, string overrideCollectionName = "") where T : Entity;
-        Task<Ref<T>> PopulateRef<T>(Ref<T> Item, string overrideCollectionName = "") where T : Entity;
+        Task<List<Ref<T>>> ByRef<T>(List<Ref<T>> Item, string overrideCollectionName = "") where T : Entity, new();
+        Task<T> ByRef<T>(Ref<T> Item, string overrideCollectionName = "") where T : Entity, new();
+        Task<Ref<T>> PopulateRef<T>(Ref<T> Item, string overrideCollectionName = "") where T : Entity, new();
         
         Task<IQueryable<T>> All<T>(string overrideCollectionName = "") where T : Entity;
         
