@@ -1,27 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GoLive.Saturn.Data.Entities;
 
 namespace GoLive.Saturn.Data.Abstractions
 {
+
     public static class SyncHelper
     {
-        public static IList<TLocal> SyncFromLocal<TLocal, TRemote>(
+        public static async Task<IList<TLocal>> SyncFrom<TLocal, TRemote>(
             this IList<TLocal> Local,
             IList<TRemote> Remote,
             Func<TLocal, TRemote, bool> Identifier,
             Func<TLocal, TRemote, TLocal> PerformAssignments,
-            Action<List<TLocal>> ItemsToDelete,
-            Action<List<TLocal>> ItemsToUpsert
-        )
-            where TLocal : Entity, new() where TRemote : Entity, new()
+            Func<List<TLocal>, Task> ItemsToDeleteFunc,
+            Func<List<TLocal>, Task> ItemsToUpdateFunc,
+            Func<List<TLocal>, Task> ItemsToAddFunc
+        ) where TLocal : new()
         {
             var actualList = new List<TLocal>();
+            var itemsAdded = new List<TLocal>();
 
             foreach (TRemote remoteItem in Remote)
             {
-                var item = Local.FirstOrDefault(f => Identifier.Invoke(f, remoteItem)) ?? new TLocal();
+                var item = Local.FirstOrDefault(f => Identifier.Invoke(f, remoteItem));
+                bool itemAdded = false;
+                
+                if (item == null)
+                {
+                    item = new TLocal();
+                    itemAdded = true;
+                }
 
                 if (PerformAssignments != null)
                 {
@@ -32,70 +42,38 @@ namespace GoLive.Saturn.Data.Abstractions
                     remoteItem.CopyPropertiesTo(item);
                 }
 
-                actualList.Add(item);
+                if (itemAdded)
+                {
+                    itemsAdded.Add(item);
+                }
+                else
+                {
+                    actualList.Add(item);
+                }
             }
 
             var toDelete = Local.Except(actualList).ToList();
-            ItemsToDelete.Invoke(toDelete);
-            ItemsToUpsert.Invoke(actualList);
-            return Local;
-        }
 
-        public static IList<TLocal> SyncFromRemote<TLocal, TRemote>(
-            this IList<TLocal> Local, 
-            IList<TRemote> Remote, 
-            Func<TLocal, TRemote, bool> Identifier, 
-            Func<TLocal, TRemote, TLocal> PerformAssignments, 
-            Action<List<TLocal>> ItemsToDelete, 
-            Action<List<TLocal>> ItemsToUpsert
-        ) 
-            where TLocal : Entity, new()
-        {
-            var actualList = new List<TLocal>();
-
-            foreach (TRemote remoteItem in Remote)
+            if (ItemsToDeleteFunc != null)
             {
-                var item = Local.FirstOrDefault(f => Identifier.Invoke(f, remoteItem)) ?? new TLocal();
-                item = PerformAssignments.Invoke(item, remoteItem);
-                actualList.Add(item);
+                await ItemsToDeleteFunc.Invoke(toDelete);
             }
 
-            var toDelete = Local.Except(actualList).ToList();
-            ItemsToDelete.Invoke(toDelete);
-            ItemsToUpsert.Invoke(actualList);
-
-            return Local;
-        }
-
-
-        public static IList<TLocal> SyncFrom<TLocal, TRemote>(this IList<TLocal> Local,
-            IList<TRemote> Remote,
-            Func<TLocal, TRemote, bool> Identifier,
-            Func<TLocal, TRemote, TLocal> PerformAssignments,
-            bool IsExternal,
-            Action<List<TLocal>> ItemsToDelete,
-            Action<List<TLocal>> ItemsToUpsert) where TLocal : Entity, new()
-        {
-            var actualList = new List<TLocal>();
-
-            foreach (TRemote remoteItem in Remote)
+            if (ItemsToUpdateFunc != null)
             {
-                var item = Local.FirstOrDefault(f => Identifier.Invoke(f, remoteItem)) ?? new TLocal();
-
-                item = PerformAssignments.Invoke(item, remoteItem);
-
-                actualList.Add(item);
+                await ItemsToUpdateFunc.Invoke(actualList);
             }
 
-            var toDelete = Local.Except(actualList).ToList();
-            ItemsToDelete.Invoke(toDelete);
-            ItemsToUpsert.Invoke(actualList);
+            if (ItemsToAddFunc != null)
+            {
+                await ItemsToAddFunc.Invoke(itemsAdded);
+            }
+            
             return Local;
         }
 
         private static void CopyPropertiesTo<T, TU>(this T source, TU dest)
         {
-
             var sourceProps = typeof(T).GetProperties().Where(x => x.CanRead).Where(f => f.Name != "Id").ToList();
             var destProps = typeof(TU).GetProperties().Where(x => x.CanWrite).Where(f => f.Name != "Id" ).ToList();
 
